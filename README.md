@@ -84,6 +84,7 @@ docker run -d \
 ```
 
 Set `IROFFER_BOT_NAME` in `.env` to force `user_nick` in `iroffer.config` on every startup.
+Set `PORT_RANGE` in `.env` (`START-END`) to force `tcprangestart` and `tcprangelimit` in `iroffer.config` on every startup.
 
 ## Useful commands
 
@@ -108,6 +109,8 @@ docker rm -f "${CONTAINER_NAME}"
 
 - Container paths are fixed under `/home/iroffer` (`config`, `data`, `logs`).
 - Iroffer runs in foreground mode; allocate a TTY (`tty: true` in compose or `docker run -t`).
+- `PORT_RANGE` must be `START-END` (for example `30000-31000`). Startup applies `tcprangestart=START` and `tcprangelimit=END`.
+- `EXPOSE` in `Dockerfile` is image metadata; effective published ports come from `-p`/compose `ports` using `PORT_RANGE`.
 - Iroffer source URL and checksum are pinned in `Dockerfile` for reproducible builds.
 - The image modifies a sample config under `/extras/sample.customized.config` during build.
 - Place your bot config at `./config/iroffer.config` on the host (mounted to `/home/iroffer/config/iroffer.config`).

@@ -9,6 +9,7 @@ DATA_DIR="${APP_HOME}/data"
 LOG_DIR="${APP_HOME}/logs"
 CONFIG_FILE_NAME="iroffer.config"
 BOT_NAME="${IROFFER_BOT_NAME:-}"
+PORT_RANGE_OVERRIDE="${PORT_RANGE:-}"
 
 run_iroffer_as_app_user() {
   # Keep initialization as root, then drop privileges for the bot process.
@@ -75,12 +76,50 @@ apply_bot_name_override() {
   chown "${APP_USER}": "${config_path}"
 }
 
+apply_port_range_override() {
+  local config_path="${CONFIG_DIR}/${CONFIG_FILE_NAME}"
+
+  if [ -z "${PORT_RANGE_OVERRIDE}" ] || [ ! -f "${config_path}" ]; then
+    return
+  fi
+
+  local range_start range_limit
+  range_start=${PORT_RANGE_OVERRIDE%%-*}
+  range_limit=${PORT_RANGE_OVERRIDE##*-}
+
+  if ! [[ "${range_start}" =~ ^[0-9]+$ && "${range_limit}" =~ ^[0-9]+$ ]]; then
+    echo "Invalid PORT_RANGE '${PORT_RANGE_OVERRIDE}'. Expected format: START-END (e.g. 30000-31000)." >&2
+    exit 1
+  fi
+
+  if [ "${range_start}" -lt 1 ] || [ "${range_limit}" -gt 65535 ] || [ "${range_start}" -gt "${range_limit}" ]; then
+    echo "Invalid PORT_RANGE '${PORT_RANGE_OVERRIDE}'. Valid range is 1-65535 and START <= END." >&2
+    exit 1
+  fi
+
+  # iroffer uses tcprangelimit as the maximum port number, not a count.
+  if grep -q '^#\?tcprangestart[[:space:]]' "${config_path}"; then
+    sed -i -E "s|^#?tcprangestart[[:space:]].*$|tcprangestart ${range_start}|" "${config_path}"
+  else
+    printf '\ntcprangestart %s\n' "${range_start}" >> "${config_path}"
+  fi
+
+  if grep -q '^#\?tcprangelimit[[:space:]]' "${config_path}"; then
+    sed -i -E "s|^#?tcprangelimit[[:space:]].*$|tcprangelimit ${range_limit}|" "${config_path}"
+  else
+    printf 'tcprangelimit %s\n' "${range_limit}" >> "${config_path}"
+  fi
+
+  chown "${APP_USER}": "${config_path}"
+}
+
 # Startup
 if [[ -z ${1} ]]; then
 # default
 # prep
   init_config
   apply_bot_name_override
+  apply_port_range_override
   run_iroffer_as_app_user -kns -w "${APP_HOME}/" "${CONFIG_DIR}/${CONFIG_FILE_NAME}"
 else
 # -?|-h|-v|-c

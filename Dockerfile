@@ -62,7 +62,8 @@ ARG DEBIAN_FRONTEND=noninteractive
 ARG IROFFER_USER_ID=1000
 ARG IROFFER_GROUP_ID=1000
 
-ENV IROFFER_BOT_NAME=mybot
+ENV IROFFER_BOT_NAME=mybot \
+	PORT_RANGE=30000-31000
 
 LABEL name="iroffer" \
 	  description="iroffer-dinoex XDCC bot with curl, GeoIP, Ruby, and UPnP support"
@@ -98,6 +99,6 @@ RUN set -eux; \
 
 WORKDIR /home/iroffer
 VOLUME ["/home/iroffer/config", "/home/iroffer/data"]
-EXPOSE 30000-31000
+EXPOSE ${PORT_RANGE}
 
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]

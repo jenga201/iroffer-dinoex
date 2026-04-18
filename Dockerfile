@@ -59,10 +59,10 @@ RUN set -eux; \
 FROM debian:stable-slim
 
 ARG DEBIAN_FRONTEND=noninteractive
-ARG IROFFER_USER_ID=999
-ARG IROFFER_GROUP_ID=999
+ARG IROFFER_USER_ID=1000
+ARG IROFFER_GROUP_ID=1000
 
-ENV IROFFER_CONFIG_FILE_NAME=mybot.config
+ENV IROFFER_BOT_NAME=mybot
 
 LABEL name="iroffer" \
 	  description="iroffer-dinoex XDCC bot with curl, GeoIP, Ruby, and UPnP support"

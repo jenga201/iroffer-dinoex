@@ -72,6 +72,7 @@ set -a
 source ./.env
 set +a
 docker run -d \
+  -t \
   --name "${CONTAINER_NAME}" \
   --restart unless-stopped \
   --env-file ./.env \
@@ -81,6 +82,8 @@ docker run -d \
   -p "${PORT_RANGE}:${PORT_RANGE}" \
   "${IMAGE_NAME}:${IMAGE_TAG}"
 ```
+
+Set `IROFFER_BOT_NAME` in `.env` to force `user_nick` in `iroffer.config` on every startup.
 
 ## Useful commands
 
@@ -104,7 +107,9 @@ docker rm -f "${CONTAINER_NAME}"
 ## Notes
 
 - Container paths are fixed under `/home/iroffer` (`config`, `data`, `logs`).
+- Iroffer runs in foreground mode; allocate a TTY (`tty: true` in compose or `docker run -t`).
 - Iroffer source URL and checksum are pinned in `Dockerfile` for reproducible builds.
 - The image modifies a sample config under `/extras/sample.customized.config` during build.
-- Place your bot config at `./config/mybot.config` on the host (mounted to `/home/iroffer/config/mybot.config`).
+- Place your bot config at `./config/iroffer.config` on the host (mounted to `/home/iroffer/config/iroffer.config`).
+- If `IROFFER_BOT_NAME` is set, `entrypoint.sh` rewrites `user_nick` in `/home/iroffer/config/iroffer.config` before startup.
 

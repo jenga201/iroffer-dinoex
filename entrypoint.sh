@@ -6,7 +6,7 @@ APP_USER="iroffer"
 APP_HOME="/home/${APP_USER}"
 CONFIG_DIR="${APP_HOME}/config"
 DATA_DIR="${APP_HOME}/data"
-#LOG_DIR="${APP_HOME}/logs"
+LOG_DIR="${APP_HOME}/logs"
 CONFIG_FILE_NAME="iroffer.config"
 BOT_NAME="${IROFFER_BOT_NAME:-}"
 PORT_RANGE_OVERRIDE="${PORT_RANGE:-}"
@@ -48,12 +48,12 @@ init_config() {
     chown -R "${APP_USER}": "${DATA_DIR}"
   fi
 
-#  # Logs
-#  if [ ! -d "${LOG_DIR}" ]; then
-#    mkdir -p "${LOG_DIR}"
-#    chmod -R 0755 "${LOG_DIR}"
-#    chown -R "${APP_USER}": "${LOG_DIR}"
-#  fi
+  # Logs
+  if [ ! -d "${LOG_DIR}" ]; then
+    mkdir -p "${LOG_DIR}"
+    chmod -R 0755 "${LOG_DIR}"
+    chown -R "${APP_USER}": "${LOG_DIR}"
+  fi
 }
 
 apply_bot_name_override() {

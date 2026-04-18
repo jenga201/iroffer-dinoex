@@ -29,13 +29,14 @@ init_config() {
   if [ ! -d "${CONFIG_DIR}" ]; then
     mkdir -p "${CONFIG_DIR}"
     chmod -R 0755 "${CONFIG_DIR}"
+    chown -R "${APP_USER}": "${CONFIG_DIR}"
   fi
 
   if [ ! -e "${CONFIG_DIR}/${CONFIG_FILE_NAME}" ]; then
     cp /extras/sample.customized.config "${CONFIG_DIR}/${CONFIG_FILE_NAME}"
-    echo "Copied fresh sample configuration to ${CONFIG_DIR}/${CONFIG_FILE_NAME}. Exiting."
-    chown -R "${APP_USER}": "${CONFIG_DIR}"
-    exit
+    echo "Copied fresh sample configuration to ${CONFIG_DIR}/${CONFIG_FILE_NAME}."
+    chmod -R 0755 "${CONFIG_DIR}/${CONFIG_FILE_NAME}"
+    chown -R "${APP_USER}": "${CONFIG_DIR}/${CONFIG_FILE_NAME}"
   fi
 
   # Data

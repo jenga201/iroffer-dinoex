@@ -61,7 +61,7 @@ docker build \
   --build-arg CONT_IMG_VER="${CONT_IMG_VER}" \
   --build-arg IROFFER_USER_ID="${IROFFER_USER_ID}" \
   --build-arg IROFFER_GROUP_ID="${IROFFER_GROUP_ID}" \
-  --build-arg IROFFER_VER="${IROFFER_VER}" \
+  --build-arg IROFFER_URL="${IROFFER_URL}" \
   --build-arg IROFFER_SHA256="${IROFFER_SHA256}" \
   -t "${IMAGE_NAME}:${IMAGE_TAG}" \
   .

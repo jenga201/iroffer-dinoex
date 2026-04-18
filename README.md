@@ -44,10 +44,12 @@ The main variables in `.env` are:
 - `CONFIG_DIR` (default `./config`): mounted to `/home/iroffer`
 - `DATA_DIR` (default `./files`): mounted to `/data`
 - `PORT_RANGE` (default `30000-31000`): published by Docker and applied to `iroffer.config` on startup
+- `HTTP_PORT` (optional): if set, startup sets/replaces `http_port` in `iroffer.config`
 
 ## Notes
 
 - On first start, the container creates `${CONFIG_DIR}/config` and `${CONFIG_DIR}/logs` if missing.
 - The default image config serves files from `/data`, which maps to `${DATA_DIR}`.
 - If you change `PORT_RANGE`, keep it in `START-END` format (example: `30000-31000`).
+- If you set `HTTP_PORT`, keep it in `1-65535`.
 

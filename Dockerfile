@@ -49,7 +49,7 @@ RUN set -eux; \
 	sed -i -e "s|pidfile mybot.pid|pidfile /home/iroffer/config/mybot.pid|g" /out/extras/sample.customized.config; \
 	sed -i -e "s|logfile mybot.log|logfile /home/iroffer/logs/mybot.log|g" /out/extras/sample.customized.config; \
 	sed -i -e "s|statefile mybot.state|statefile /home/iroffer/config/mybot.state|g" /out/extras/sample.customized.config; \
-	sed -i -e "s|xdcclistfile mybot.txt|xdcclistfile /home/iroffer/data/packlist.txt|g" /out/extras/sample.customized.config; \
+	sed -i -e "s|xdcclistfile mybot.txt|xdcclistfile /home/iroffer/packlist.txt|g" /out/extras/sample.customized.config; \
 	sed -i -e "s|^#filedir /home/me/files$|filedir /data|" /out/extras/sample.customized.config; \
 	sed -i '/^# 1st Network, only IPv4$/, /^$/ s|^channel #dinoex -noannounce$|channel #nibl -noannounce|' /out/extras/sample.customized.config; \
 	sed -i "/# 2nd Network/,/^$/d" /out/extras/sample.customized.config; \

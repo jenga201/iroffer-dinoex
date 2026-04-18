@@ -9,6 +9,7 @@ LOG_DIR="${APP_HOME}/logs"
 CONFIG_FILE_NAME="iroffer.config"
 BOT_NAME="${IROFFER_BOT_NAME:-}"
 PORT_RANGE_OVERRIDE="${PORT_RANGE:-}"
+HTTP_PORT_OVERRIDE="${HTTP_PORT:-}"
 
 run_iroffer_as_app_user() {
   # Keep initialization as root, then drop privileges for the bot process.
@@ -105,6 +106,32 @@ apply_port_range_override() {
   chown "${APP_USER}": "${config_path}"
 }
 
+apply_http_port_override() {
+  local config_path="${CONFIG_DIR}/${CONFIG_FILE_NAME}"
+
+  if [ -z "${HTTP_PORT_OVERRIDE}" ] || [ ! -f "${config_path}" ]; then
+    return
+  fi
+
+  if ! [[ "${HTTP_PORT_OVERRIDE}" =~ ^[0-9]+$ ]]; then
+    echo "Invalid HTTP_PORT '${HTTP_PORT_OVERRIDE}'. Expected a numeric port (e.g. 8080)." >&2
+    exit 1
+  fi
+
+  if [ "${HTTP_PORT_OVERRIDE}" -lt 1 ] || [ "${HTTP_PORT_OVERRIDE}" -gt 65535 ]; then
+    echo "Invalid HTTP_PORT '${HTTP_PORT_OVERRIDE}'. Valid range is 1-65535." >&2
+    exit 1
+  fi
+
+  if grep -q '^#\?http_port[[:space:]]' "${config_path}"; then
+    sed -i -E "s|^#?http_port[[:space:]].*$|http_port ${HTTP_PORT_OVERRIDE}|" "${config_path}"
+  else
+    printf '\nhttp_port %s\n' "${HTTP_PORT_OVERRIDE}" >> "${config_path}"
+  fi
+
+  chown "${APP_USER}": "${config_path}"
+}
+
 # Startup
 if [[ -z ${1} ]]; then
 # default
@@ -112,6 +139,7 @@ if [[ -z ${1} ]]; then
   init_config
   apply_bot_name_override
   apply_port_range_override
+  apply_http_port_override
   run_iroffer_as_app_user -kns -w "${APP_HOME}/" "${CONFIG_DIR}/${CONFIG_FILE_NAME}"
 else
 # -?|-h|-v|-c

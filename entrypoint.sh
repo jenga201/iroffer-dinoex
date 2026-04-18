@@ -5,7 +5,6 @@ set -e
 APP_USER="iroffer"
 APP_HOME="/home/${APP_USER}"
 CONFIG_DIR="${APP_HOME}/config"
-DATA_DIR="${APP_HOME}/data"
 LOG_DIR="${APP_HOME}/logs"
 CONFIG_FILE_NAME="iroffer.config"
 BOT_NAME="${IROFFER_BOT_NAME:-}"
@@ -39,13 +38,6 @@ init_config() {
     echo "Copied fresh sample configuration to ${CONFIG_DIR}/${CONFIG_FILE_NAME}."
     chmod -R 0755 "${CONFIG_DIR}/${CONFIG_FILE_NAME}"
     chown -R "${APP_USER}": "${CONFIG_DIR}/${CONFIG_FILE_NAME}"
-  fi
-
-  # Data
-  if [ ! -d "${DATA_DIR}" ]; then
-    mkdir -p "${DATA_DIR}"
-    chmod -R 0750 "${DATA_DIR}"
-    chown -R "${APP_USER}": "${DATA_DIR}"
   fi
 
   # Logs

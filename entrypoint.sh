@@ -5,7 +5,7 @@ set -e
 APP_USER="iroffer"
 APP_HOME="/home/${APP_USER}"
 CONFIG_DIR="${APP_HOME}/config"
-DATA_DIR="/data"
+DATA_DIR="${APP_HOME}/data"
 LOG_DIR="${APP_HOME}/logs"
 CONFIG_FILE_NAME="iroffer.config"
 BOT_NAME="${IROFFER_BOT_NAME:-}"

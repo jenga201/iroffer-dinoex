@@ -7,6 +7,7 @@ Docker image for running Iroffer Dinoex (XDCC bot) in a container.
 Based on `Dockerfile`:
 - Entrypoint: `entrypoint.sh`
 - Home dir in container: `/home/iroffer`
+- Host `${CONFIG_DIR}` is mounted to `/home/iroffer`
 - Config dir in container: `/home/iroffer/config`
 - Data dir in container: `/home/iroffer/data`
 - Log dir in container: `/home/iroffer/logs`
@@ -21,8 +22,10 @@ Based on `Dockerfile`:
 ## 1) Create local directories
 
 ```bash
-mkdir -p ./config ./files ./logs
+mkdir -p ./config
 ```
+
+On first start, the container creates `config`, `data`, and `logs` inside `${CONFIG_DIR}` as needed.
 
 ## 2) Configure environment
 
@@ -76,8 +79,7 @@ docker run -d \
   --name "${CONTAINER_NAME}" \
   --restart unless-stopped \
   --env-file ./.env \
-  -v "${CONFIG_DIR}:/home/iroffer/config" \
-  -v "${DATA_DIR}:/home/iroffer/data" \
+  -v "${CONFIG_DIR}:/home/iroffer" \
   -p "${PORT_RANGE}:${PORT_RANGE}" \
   "${IMAGE_NAME}:${IMAGE_TAG}"
 ```
@@ -106,12 +108,13 @@ docker rm -f "${CONTAINER_NAME}"
 
 ## Notes
 
-- Container paths are fixed under `/home/iroffer` (`config`, `data`, `logs`).
+- Container paths are fixed under `/home/iroffer` (`config`, `data`, `logs`), and the full tree is visible on the host through `${CONFIG_DIR}`.
 - Iroffer runs in foreground mode; allocate a TTY (`tty: true` in compose or `docker run -t`).
 - `PORT_RANGE` must be `START-END` (for example `30000-31000`). Startup applies `tcprangestart=START` and `tcprangelimit=END`.
 - `EXPOSE` in `Dockerfile` is image metadata; effective published ports come from `-p`/compose `ports` using `PORT_RANGE`.
 - Iroffer source URL and checksum are pinned in `Dockerfile` for reproducible builds.
 - The image modifies a sample config under `/extras/sample.customized.config` during build.
-- Place your bot config at `./config/iroffer.config` on the host (mounted to `/home/iroffer/config/iroffer.config`).
+- Place your bot config at `${CONFIG_DIR}/config/iroffer.config` on the host (mounted to `/home/iroffer/config/iroffer.config`).
+- Shared files belong under `${CONFIG_DIR}/data`, and logs are written under `${CONFIG_DIR}/logs`.
 - If `IROFFER_BOT_NAME` is set, `entrypoint.sh` rewrites `user_nick` in `/home/iroffer/config/iroffer.config` before startup.
 

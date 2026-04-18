@@ -56,17 +56,13 @@ RUN set -eux; \
 
 FROM debian:stable-slim
 
-ARG CONT_IMG_VER
 ARG DEBIAN_FRONTEND=noninteractive
 ARG IROFFER_USER_ID=999
 ARG IROFFER_GROUP_ID=999
 
-ENV CONT_IMG_VER=${CONT_IMG_VER:-v1.0}
 ENV IROFFER_CONFIG_FILE_NAME=mybot.config
 
 LABEL name="iroffer" \
-	  version="${CONT_IMG_VER}" \
-	  maintainer="Luis E Alvarado <admin@avnet.ws>" \
 	  description="iroffer-dinoex XDCC bot with curl, GeoIP, Ruby, and UPnP support"
 
 RUN set -eux; \

@@ -25,16 +25,17 @@ if [ "${1:0:1}" = '-' ]; then
 fi
 
 init_config() {
-  # Config
+  # Config: ensure directory exists, then ensure config file exists.
   if [ ! -d "${CONFIG_DIR}" ]; then
     mkdir -p "${CONFIG_DIR}"
-    if [ ! -e "${CONFIG_DIR}/${CONFIG_FILE_NAME}" ]; then
-      cp /extras/sample.customized.config "${CONFIG_DIR}/${CONFIG_FILE_NAME}"
-      echo "Copied fresh sample configuration to ${CONFIG_DIR}/${CONFIG_FILE_NAME}. Exiting."
-      exit
-    fi
     chmod -R 0755 "${CONFIG_DIR}"
+  fi
+
+  if [ ! -e "${CONFIG_DIR}/${CONFIG_FILE_NAME}" ]; then
+    cp /extras/sample.customized.config "${CONFIG_DIR}/${CONFIG_FILE_NAME}"
+    echo "Copied fresh sample configuration to ${CONFIG_DIR}/${CONFIG_FILE_NAME}. Exiting."
     chown -R "${APP_USER}": "${CONFIG_DIR}"
+    exit
   fi
 
   # Data

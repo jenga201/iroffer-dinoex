@@ -59,7 +59,6 @@ set -a
 source ./.env
 set +a
 docker build \
-  --build-arg CONT_IMG_VER="${CONT_IMG_VER}" \
   --build-arg IROFFER_USER_ID="${IROFFER_USER_ID}" \
   --build-arg IROFFER_GROUP_ID="${IROFFER_GROUP_ID}" \
   -t "${IMAGE_NAME}:${IMAGE_TAG}" \

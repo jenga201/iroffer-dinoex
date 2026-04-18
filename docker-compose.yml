@@ -3,7 +3,6 @@ services:
     build:
       context: .
       args:
-        CONT_IMG_VER: ${CONT_IMG_VER}
         IROFFER_USER_ID: ${IROFFER_USER_ID}
         IROFFER_GROUP_ID: ${IROFFER_GROUP_ID}
     image: ${IMAGE_NAME}:${IMAGE_TAG}

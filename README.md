@@ -76,9 +76,8 @@ docker run -d \
   --name "${CONTAINER_NAME}" \
   --restart unless-stopped \
   --env-file ./.env \
-  -v "${HOST_CONFIG_DIR}:/home/iroffer/config" \
-  -v "${HOST_DATA_DIR}:/home/iroffer/data" \
-  -v "${HOST_LOG_DIR}:/home/iroffer/logs" \
+  -v "${CONFIG_DIR}:/home/iroffer/config" \
+  -v "${DATA_DIR}:/home/iroffer/data" \
   -p "${PORT_RANGE}:${PORT_RANGE}" \
   "${IMAGE_NAME}:${IMAGE_TAG}"
 ```

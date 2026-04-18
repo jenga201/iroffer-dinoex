@@ -12,9 +12,8 @@ services:
     env_file:
       - .env
     volumes:
-      - ${HOST_CONFIG_DIR}:/home/iroffer/config
-      - ${HOST_DATA_DIR}:/home/iroffer/data
-      - ${HOST_LOG_DIR}:/home/iroffer/logs
+      - ${CONFIG_DIR}:/home/iroffer
+      - ${DATA_DIR}:/home/iroffer/data
     ports:
       - ${PORT_RANGE}:${PORT_RANGE}
 

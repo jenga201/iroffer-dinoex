@@ -44,11 +44,13 @@ RUN set -eux; \
 	cp -p ./sample.config /out/extras/sample.config; \
 	cp -p ./sample.config /out/extras/sample.customized.config; \
 	chmod 600 /out/extras/sample.config /out/extras/sample.customized.config; \
+	random_nick="mybot$(od -An -N4 -tx1 /dev/urandom | tr -d ' \n')"; \
+	sed -i -e "s|^user_nick mybotDCC$|user_nick ${random_nick}|" /out/extras/sample.customized.config; \
 	sed -i -e "s|pidfile mybot.pid|pidfile /home/iroffer/config/mybot.pid|g" /out/extras/sample.customized.config; \
 	sed -i -e "s|logfile mybot.log|logfile /home/iroffer/logs/mybot.log|g" /out/extras/sample.customized.config; \
 	sed -i -e "s|statefile mybot.state|statefile /home/iroffer/config/mybot.state|g" /out/extras/sample.customized.config; \
 	sed -i -e "s|xdcclistfile mybot.txt|xdcclistfile /home/iroffer/data/packlist.txt|g" /out/extras/sample.customized.config; \
-	sed -i "/channel #dinoex -noannounce/s/^/#/" /out/extras/sample.customized.config; \
+	sed -i '/^# 1st Network, only IPv4$/, /^$/ s|^channel #dinoex -noannounce$|#channel #nibl -noannounce|' /out/extras/sample.customized.config; \
 	sed -i "/# 2nd Network/,/^$/d" /out/extras/sample.customized.config; \
 	sed -i "/# 3st Network/,/^$/d" /out/extras/sample.customized.config; \
 	sed -i "/#no_status_log/s/#//g" /out/extras/sample.customized.config

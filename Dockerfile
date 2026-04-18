@@ -44,10 +44,10 @@ RUN set -eux; \
 	cp -p ./sample.config /out/extras/sample.config; \
 	cp -p ./sample.config /out/extras/sample.customized.config; \
 	chmod 600 /out/extras/sample.config /out/extras/sample.customized.config; \
-	sed -i -e "s|pidfile mybot.pid|pidfile /config/mybot.pid|g" /out/extras/sample.customized.config; \
-	sed -i -e "s|logfile mybot.log|logfile /logs/mybot.log|g" /out/extras/sample.customized.config; \
-	sed -i -e "s|statefile mybot.state|statefile /config/mybot.state|g" /out/extras/sample.customized.config; \
-	sed -i -e "s|xdcclistfile mybot.txt|xdcclistfile /files/packlist.txt|g" /out/extras/sample.customized.config; \
+	sed -i -e "s|pidfile mybot.pid|pidfile /home/iroffer/config/mybot.pid|g" /out/extras/sample.customized.config; \
+	sed -i -e "s|logfile mybot.log|logfile /home/iroffer/logs/mybot.log|g" /out/extras/sample.customized.config; \
+	sed -i -e "s|statefile mybot.state|statefile /home/iroffer/config/mybot.state|g" /out/extras/sample.customized.config; \
+	sed -i -e "s|xdcclistfile mybot.txt|xdcclistfile /home/iroffer/data/packlist.txt|g" /out/extras/sample.customized.config; \
 	sed -i "/channel #dinoex -noannounce/s/^/#/" /out/extras/sample.customized.config; \
 	sed -i "/# 2nd Network/,/^$/d" /out/extras/sample.customized.config; \
 	sed -i "/# 3st Network/,/^$/d" /out/extras/sample.customized.config; \
@@ -62,11 +62,7 @@ ARG IROFFER_USER_ID=999
 ARG IROFFER_GROUP_ID=999
 
 ENV CONT_IMG_VER=${CONT_IMG_VER:-v1.0}
-ENV IROFFER_USER=iroffer \
-	IROFFER_CONFIG_DIR=/config \
-	IROFFER_DATA_DIR=/files \
-	IROFFER_LOG_DIR=/logs \
-	IROFFER_CONFIG_FILE_NAME=mybot.config
+ENV IROFFER_CONFIG_FILE_NAME=mybot.config
 
 LABEL name="iroffer" \
 	  version="${CONT_IMG_VER}" \
@@ -82,16 +78,16 @@ RUN set -eux; \
 	  libminiupnpc18 \
 	  ruby; \
 	rm -rf /var/lib/apt/lists/*; \
-	groupadd --gid "${IROFFER_GROUP_ID}" --system "${IROFFER_USER}"; \
+	groupadd --gid "${IROFFER_GROUP_ID}" --system iroffer; \
 	useradd \
 	  --uid "${IROFFER_USER_ID}" \
 	  --gid "${IROFFER_GROUP_ID}" \
 	  --system \
-	  --no-create-home \
-	  --home-dir /nonexistent \
+	  --create-home \
+	  --home-dir /home/iroffer \
 	  --shell /usr/sbin/nologin \
-	  "${IROFFER_USER}"; \
-	mkdir -p /extras /config /files /logs
+	  iroffer; \
+	mkdir -p /extras /home/iroffer/config /home/iroffer/data /home/iroffer/logs
 
 COPY --from=builder /out/iroffer /iroffer
 COPY --from=builder /out/extras /extras
@@ -100,10 +96,10 @@ COPY entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN set -eux; \
 	chmod 0755 /usr/local/bin/entrypoint.sh /iroffer; \
 	ln -sf /usr/local/bin/entrypoint.sh /entrypoint.sh; \
-	chown -R "${IROFFER_USER}":"${IROFFER_USER}" /config /files /logs /extras
+	chown -R iroffer:iroffer /home/iroffer /extras
 
-WORKDIR /
-VOLUME ["${IROFFER_CONFIG_DIR}", "${IROFFER_DATA_DIR}"]
+WORKDIR /home/iroffer
+VOLUME ["/home/iroffer/config", "/home/iroffer/data"]
 EXPOSE 30000-31000
 
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]

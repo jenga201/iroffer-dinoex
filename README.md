@@ -6,9 +6,10 @@ Docker image for running Iroffer Dinoex (XDCC bot) in a container.
 
 Based on `Dockerfile`:
 - Entrypoint: `entrypoint.sh`
-- Config dir in container: `/config`
-- Data dir in container: `/files`
-- Log dir in container: `/logs`
+- Home dir in container: `/home/iroffer`
+- Config dir in container: `/home/iroffer/config`
+- Data dir in container: `/home/iroffer/data`
+- Log dir in container: `/home/iroffer/logs`
 - Exposed DCC port range: `30000-31000`
 
 ## Prerequisites
@@ -61,8 +62,6 @@ docker build \
   --build-arg CONT_IMG_VER="${CONT_IMG_VER}" \
   --build-arg IROFFER_USER_ID="${IROFFER_USER_ID}" \
   --build-arg IROFFER_GROUP_ID="${IROFFER_GROUP_ID}" \
-  --build-arg IROFFER_URL="${IROFFER_URL}" \
-  --build-arg IROFFER_SHA256="${IROFFER_SHA256}" \
   -t "${IMAGE_NAME}:${IMAGE_TAG}" \
   .
 ```
@@ -77,9 +76,9 @@ docker run -d \
   --name "${CONTAINER_NAME}" \
   --restart unless-stopped \
   --env-file ./.env \
-  -v "${HOST_CONFIG_DIR}:${IROFFER_CONFIG_DIR}" \
-  -v "${HOST_DATA_DIR}:${IROFFER_DATA_DIR}" \
-  -v "${HOST_LOG_DIR}:${IROFFER_LOG_DIR}" \
+  -v "${HOST_CONFIG_DIR}:/home/iroffer/config" \
+  -v "${HOST_DATA_DIR}:/home/iroffer/data" \
+  -v "${HOST_LOG_DIR}:/home/iroffer/logs" \
   -p "${PORT_RANGE}:${PORT_RANGE}" \
   "${IMAGE_NAME}:${IMAGE_TAG}"
 ```
@@ -105,7 +104,8 @@ docker rm -f "${CONTAINER_NAME}"
 
 ## Notes
 
-- The Dockerfile sets defaults for `IROFFER_CONFIG_DIR`, `IROFFER_DATA_DIR`, and `IROFFER_LOG_DIR`.
+- Container paths are fixed under `/home/iroffer` (`config`, `data`, `logs`).
+- Iroffer source URL and checksum are pinned in `Dockerfile` for reproducible builds.
 - The image modifies a sample config under `/extras/sample.customized.config` during build.
-- If your `entrypoint.sh` expects `/config/mybot.config`, place your bot config at `./config/mybot.config` on the host.
+- Place your bot config at `./config/mybot.config` on the host (mounted to `/home/iroffer/config/mybot.config`).
 

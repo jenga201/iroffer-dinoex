@@ -13,7 +13,7 @@ services:
       - .env
     volumes:
       - ${CONFIG_DIR}:/home/iroffer
-      - ${DATA_DIR}:/home/iroffer/data
+      - ${DATA_DIR}:/data
     ports:
       - ${PORT_RANGE}:${PORT_RANGE}
 

@@ -1,4 +1,4 @@
-FROM debian:9-slim
+FROM debian:stable-slim
 
 LABEL name="iroffer" \
 version=$CONT_IMG_VER \
@@ -11,6 +11,7 @@ ENV CONT_IMG_VER ${CONT_IMG_VER:-v1.0}
 ARG DEBIAN_FRONTEND=noninteractive
 
 ENV PREQ_PACKAGES \
+ca-certificates \
 curl
 
 ENV BUILD_PACKAGES \

@@ -4,7 +4,7 @@ ARG DEBIAN_FRONTEND=noninteractive
 # Pinned source: update URL and SHA256 together.
 ARG IROFFER_URL="https://iroffer.net/iroffer-dinoex-snap.tar.gz"
 ARG IROFFER_SHA256="83ef3aa28de2d9f959f4b9ceff3a2a3cb84f11870b6d3fbf67ba2790061d8d19"
-ENV BUILD_ARGS="-curl -geoip -upnp -ruby"
+ENV BUILD_ARGS="-curl -upnp -ruby"
 
 RUN set -eux; \
 	apt-get update; \
@@ -14,7 +14,6 @@ RUN set -eux; \
 	  gcc \
 	  libc-dev \
 	  libcurl4-openssl-dev \
-	  libgeoip-dev \
 	  libminiupnpc-dev \
 	  libssl-dev \
 	  make \
@@ -67,14 +66,13 @@ ENV IROFFER_BOT_NAME=mybot \
 	PORT_RANGE=30000-31000
 
 LABEL name="iroffer" \
-	  description="iroffer-dinoex XDCC bot with curl, GeoIP, Ruby, and UPnP support"
+	  description="iroffer-dinoex XDCC bot with curl, Ruby, and UPnP support"
 
 RUN set -eux; \
 	apt-get update; \
 	apt-get install -y --no-install-recommends \
 	  ca-certificates \
 	  libcurl4 \
-	  libgeoip1 \
 	  libminiupnpc18 \
 	  ruby; \
 	rm -rf /var/lib/apt/lists/*; \

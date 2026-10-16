@@ -14,11 +14,26 @@ From the project root:
 ```bash
 cp .env.example .env
 mkdir -p ./config ./files
-docker compose up -d --build
+docker compose pull      # CI-built image from ghcr.io (default)
+docker compose up -d
 docker compose logs -f --tail=100
 ```
 
 That is enough to stand up an instance.
+
+Prefer to build locally instead of pulling? Run `docker compose up -d --build`.
+
+## CI/CD
+
+GitHub Actions (`.github/workflows/docker-publish.yml`) builds the image and
+publishes it to GitHub Container Registry:
+
+- on push to `main` → `ghcr.io/jenga201/iroffer-dinoex:latest` (+ commit sha)
+- on `v*` tags → semver tags (`:1.2.3`, `:1.2`)
+- on pull requests → build only (no push)
+
+If the package is private, log in once before pulling:
+`echo $GHCR_PAT | docker login ghcr.io -u <github-user> --password-stdin`.
 
 ## Where files end up on your host
 
@@ -41,7 +56,7 @@ That is enough to stand up an instance.
 
 | Variable | Default | Purpose |
 |---|---|---|
-| `IMAGE_NAME` / `IMAGE_TAG` | `iroffer-dinoex` / `local` | built image name |
+| `IMAGE_NAME` / `IMAGE_TAG` | `ghcr.io/jenga201/iroffer-dinoex` / `latest` | image to pull/build |
 | `CONTAINER_NAME` | `iroffer` | container name |
 | `IROFFER_USER_ID` / `IROFFER_GROUP_ID` | `1000` / `1000` | build args for the in-image user |
 | `CONFIG_DIR` | `./config` | mounted to `/home/iroffer` |

@@ -12,6 +12,23 @@ services:
     container_name: ${CONTAINER_NAME:-iroffer}
     restart: unless-stopped
     tty: true        # iroffer requires a pseudo-TTY for foreground (-k) mode
+    # ---- Security hardening ----
+    # Drop ALL capabilities; re-add only what the root entrypoint needs to
+    # initialize the mounted volumes and drop privileges to the iroffer user:
+    #   CHOWN/FOWNER - chown/chmod ${CONFIG_DIR}/${DATA_DIR} on first start
+    #   SETUID/SETGID - runuser switch to the unprivileged iroffer user
+    # The bot itself then runs fully unprivileged (no raw sockets, no ports
+    # < 1024). If you set http_port/telnet_port below 1024, additionally
+    # cap_add NET_BIND_SERVICE.
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - FOWNER
+      - SETUID
+      - SETGID
+    security_opt:
+      - no-new-privileges:true
     env_file:
       - .env         # all IROFFER_* config-directive variables live here
     volumes:

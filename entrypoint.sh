@@ -149,26 +149,33 @@ if [ "${1:0:1}" = '-' ]; then
   set -- /iroffer "$@"
 fi
 
+# chown/chmod only when running as root; a rootless container (or
+# cap_drop without CHOWN/FOWNER) skips ownership fixups and relies on
+# the mounted volumes already belonging to the runtime user.
+fix_owner() {
+  if [ "$(id -u)" -eq 0 ]; then
+    chown -R "${APP_USER}": "$1"
+    chmod -R 0755 "$1"
+  fi
+}
+
 init_config() {
   # Config: ensure directory exists, then ensure config file exists.
   if [ ! -d "${CONFIG_DIR}" ]; then
     mkdir -p "${CONFIG_DIR}"
-    chmod -R 0755 "${CONFIG_DIR}"
-    chown -R "${APP_USER}": "${CONFIG_DIR}"
+    fix_owner "${CONFIG_DIR}"
   fi
 
   if [ ! -e "${CONFIG_DIR}/${CONFIG_FILE_NAME}" ]; then
     cp /extras/sample.customized.config "${CONFIG_DIR}/${CONFIG_FILE_NAME}"
     echo "Copied fresh sample configuration to ${CONFIG_DIR}/${CONFIG_FILE_NAME}."
-    chmod -R 0755 "${CONFIG_DIR}/${CONFIG_FILE_NAME}"
-    chown -R "${APP_USER}": "${CONFIG_DIR}/${CONFIG_FILE_NAME}"
+    fix_owner "${CONFIG_DIR}/${CONFIG_FILE_NAME}"
   fi
 
   # Logs
   if [ ! -d "${LOG_DIR}" ]; then
     mkdir -p "${LOG_DIR}"
-    chmod -R 0755 "${LOG_DIR}"
-    chown -R "${APP_USER}": "${LOG_DIR}"
+    fix_owner "${LOG_DIR}"
   fi
 }
 
@@ -540,7 +547,9 @@ apply_env_overrides() {
 
   cat "${tmp_config}" > "${config_path}"
   rm -f "${tmp_config}"
-  chown "${APP_USER}": "${config_path}"
+  if [ "$(id -u)" -eq 0 ]; then
+    chown "${APP_USER}": "${config_path}"
+  fi
 }
 
 # Warn about IROFFER_* variables that map to no known directive (typos are

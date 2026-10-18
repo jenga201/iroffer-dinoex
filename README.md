@@ -12,9 +12,17 @@ on **every container start**; an empty/unset variable keeps the file's value.
 From the project root:
 
 ```bash
-cp .env.example .env
+# 1. Generate the encrypted admin password required by the config file.
+#    `iroffer -c` prompts for your password twice and prints the ready-to-use
+#    line (e.g. "adminpass $1$XY$...."). Enter it interactively:
+docker run -it --rm ghcr.io/jenga201/iroffer-dinoex -c /tmp/config
+#    Copy the adminpass hash into .env as IROFFER_ADMINPASS, or into
+#    ${CONFIG_DIR}/config/iroffer.config as `adminpass <hash>`.
+
+# 2. Set up and start
+cp .env.example .env      # then set IROFFER_ADMINPASS (and IROFFER_BOT_NAME)
 mkdir -p ./config ./files
-docker compose pull      # CI-built image from ghcr.io (default)
+docker compose pull       # CI-built image from ghcr.io (default)
 docker compose up -d
 docker compose logs -f --tail=100
 ```

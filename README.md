@@ -43,6 +43,33 @@ publishes it to GitHub Container Registry:
 If the package is private, log in once before pulling:
 `echo $GHCR_PAT | docker login ghcr.io -u <github-user> --password-stdin`.
 
+## Security hardening (capabilities)
+
+The compose file now runs with `cap_drop: ALL` and only re-adds the four
+capabilities the root entrypoint genuinely needs:
+
+| Capability | Why it is needed |
+|---|---|
+| `CHOWN` | `chown iroffer:` the mounted `config`/`logs` dirs and rewritten `iroffer.config` on first start |
+| `FOWNER` | `chmod` those paths regardless of current owner |
+| `SETUID` / `SETGID` | `runuser` drops privileges from root to the unprivileged `iroffer` user before exec'ing the bot |
+
+Everything else Docker would grant by default (`NET_RAW`, `SYS_ADMIN`,
+`DAC_OVERRIDE`, …) is dropped, and `no-new-privileges:true` blocks
+privilege escalation via setuid binaries. The bot process itself runs
+unprivileged: normal sockets, high ports, files it owns.
+
+Notes:
+
+- If you point `http_port`/`telnet_port` below 1024, also add
+  `NET_BIND_SERVICE` to `cap_add`.
+- If you run the container fully rootless or pre-chown your host
+  directories yourself, you can go further and drop `cap_add` entirely
+  plus set `user: "${IROFFER_USER_ID:-1000}:${IROFFER_GROUP_ID:-1000}"` —
+  the entrypoint skips its root-only init when not running as root.
+- Consider also `read_only: true` with tmpfs mounts if you don't need
+  writes outside the two volumes (untested).
+
 ## Where files end up on your host
 
 - Bot config: `${CONFIG_DIR}/config/iroffer.config`
